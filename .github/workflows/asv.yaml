@@ -37,7 +37,7 @@ jobs:
       run: |
         cd asv_bench
         asv machine --machine=asvrunner --yes
-        asv run --durations=30 --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr --machine=asvrunner -b ^groupby.GroupByCythonAgg 
+        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
 
@@ -78,7 +78,7 @@ jobs:
 
       - name: Process ASV results
         run: |
-          python process_results.py
+          python ci/process_results.py
           
       - name: Save parquet results as an artifact
         uses: actions/upload-artifact@v4
