@@ -66,10 +66,10 @@ jobs:
           python-version: '3.12'
 
       - name: Upgrade build dependencies
-        run: pip install -U pip uv
+        run: pip install -U pip
 
       - name: Install dependencies
-        run: uv pip install pandas pyarrow
+        run: pip install pandas pyarrow
 
       - name: Download JSON results
         uses: actions/download-artifact@v4
