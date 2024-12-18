@@ -42,4 +42,4 @@ jobs:
         run: |
           cd asv_bench
           asv machine --yes
-          asv run --quick --dry-run --durations=30 --python=same --show-stderr
+          asv run --durations=30 --python=same --show-stderr
