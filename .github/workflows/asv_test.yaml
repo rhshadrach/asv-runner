@@ -1,9 +1,7 @@
 name: Run ASV
 on:
-  # TODO: Change to chron job
-  pull_request:
-    branches:
-      - main
+  schedule:
+    - cron: "0 0 * * *"
 
 env:
   ENV_FILE: environment.yml
