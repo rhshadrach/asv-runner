@@ -45,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: results.json
-        path: asv_bench/results/asvrunner/results.json
+        path: asv_bench/results.json
         retention-days: 14
 
   process-asv-benchmarks:
