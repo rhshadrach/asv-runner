@@ -38,11 +38,12 @@ jobs:
         run: ls -la
 
       - name: Set up Conda
-        uses: ./pandas/.github/actions/setup-conda
+        working-directory: ./pandas
+        uses: ./.github/actions/setup-conda
 
       - name: Build Pandas
-        id: build
-        uses: ./pandas/.github/actions/build_pandas
+        working-directory: ./pandas
+        uses: ./.github/actions/build_pandas
 
       - name: Run ASV benchmarks
         run: |
