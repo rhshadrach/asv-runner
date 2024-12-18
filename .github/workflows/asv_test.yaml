@@ -97,3 +97,4 @@ jobs:
         with:
           commit_message: Results
           branch: ${{ env.BRANCH_NAME }}
+          file_pattern: data/results.parquet
