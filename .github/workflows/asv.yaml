@@ -34,12 +34,19 @@ jobs:
           fetch-depth: 0
           path: pandas
 
+      - name: Copy pandas condarc
+        run: |
+          mkdir ci
+          cp ./pandas/ci/.condarc ci/.condarc
+
       - name: Show files
         run: ls -la
 
       - name: Set up Conda
         working-directory: ./pandas
         uses: ./.github/actions/setup-conda
+        with:
+          environment-file: ./pandas/environment.yml
 
       - name: Build Pandas
         working-directory: ./pandas
