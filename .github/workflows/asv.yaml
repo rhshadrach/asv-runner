@@ -25,21 +25,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          path: asv-runner
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
           repository: pandas-dev/pandas
           fetch-depth: 0
+          path: pandas
 
       - name: Show files
         run: ls -la
 
       - name: Set up Conda
-        uses: ./.github/actions/setup-conda
+        uses: pandas/.github/actions/setup-conda
 
       - name: Build Pandas
         id: build
-        uses: ./.github/actions/build_pandas
+        uses: pandas/.github/actions/build_pandas
 
       - name: Run ASV benchmarks
         run: |
-          cd asv_bench
+          cd pandas/asv_bench
           asv machine --yes
-          asv run --durations=30 --python=same --show-stderr
+          asv run --durations=30 --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr --machine=asvrunner -b ^groupby.GroupByCythonAgg 
+
+      - name: Process ASV results
+        run: |
+          python asv-runner/process_results.py
+          
+      - name: Save results as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: results.parquet
+          retention-days: 14
