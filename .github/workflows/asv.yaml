@@ -1,0 +1,32 @@
+name: Run ASV
+on:
+  # TODO: Change to chron job
+  pull_request:
+    branches:
+      - main
+
+env:
+  ENV_FILE: environment.yml
+  PANDAS_CI: 1
+
+permissions:
+  contents: read
+
+# pre-commit run by https://pre-commit.ci/
+jobs:
+  asv-benchmarks:
+      name: ASV Benchmarks
+      runs-on: ubuntu-24.04
+      defaults:
+        run:
+          shell: bash -el {0}
+
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          name: pandas-dev/pandas
+          fetch-depth: 0
+
+      - name: Show files
+        run: ls -la
