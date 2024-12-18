@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: asv-runner
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -37,11 +38,11 @@ jobs:
         run: ls -la
 
       - name: Set up Conda
-        uses: pandas/.github/actions/setup-conda
+        uses: ./pandas/.github/actions/setup-conda
 
       - name: Build Pandas
         id: build
-        uses: pandas/.github/actions/build_pandas
+        uses: ./pandas/.github/actions/build_pandas
 
       - name: Run ASV benchmarks
         run: |
