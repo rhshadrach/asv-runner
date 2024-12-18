@@ -1,0 +1,98 @@
+name: Run ASV
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  ENV_FILE: environment.yml
+  PANDAS_CI: 1
+  BRANCH_NAME: test
+
+permissions:
+  contents: read
+
+jobs:
+  produce-asv-benchmarks:
+    name: ASV Benchmarks
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: pandas-dev/pandas
+        fetch-depth: 0
+
+    - name: Set up Conda
+      uses: ./.github/actions/setup-conda
+
+    - name: Build pandas
+      uses: ./.github/actions/build_pandas
+
+    - name: Run ASV Benchmarks
+      run: |
+        cd asv_bench
+        asv machine --machine=asvrunner --yes
+        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
+        # Move to a standard location
+        mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
+
+    - name: Save JSON results as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: results.json
+        path: asv_bench/results.json
+        retention-days: 14
+
+  process-asv-benchmarks:
+    name: Process ASV Benchmarks
+    needs: produce-asv-benchmarks
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Upgrade build dependencies
+        run: pip install -U pip
+
+      - name: Install dependencies
+        run: pip install pandas pyarrow
+
+      - name: Download JSON results
+        uses: actions/download-artifact@v4
+        with:
+          name: results.json
+
+      - name: Process ASV results
+        run: |
+          python ci/process_results.py
+          
+      - name: Save parquet results as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: results.parquet
+          path: data/results.parquet
+          retention-days: 14
+
+      - name: Commit results
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Results
+          branch: ${{ env.BRANCH_NAME }}
+          file_pattern: data/results.parquet
