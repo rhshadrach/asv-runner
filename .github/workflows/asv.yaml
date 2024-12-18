@@ -25,7 +25,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          name: pandas-dev/pandas
+          repository: pandas-dev/pandas
           fetch-depth: 0
 
       - name: Show files
