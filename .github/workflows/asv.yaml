@@ -36,7 +36,7 @@ jobs:
     - name: Run ASV Benchmarks
       run: |
         cd asv_bench
-        asv machine --yes
+        asv machine --machine=asvrunner --yes
         asv run --durations=30 --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr --machine=asvrunner -b ^groupby.GroupByCythonAgg 
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
