@@ -9,14 +9,8 @@ import pandas as pd
 # asv machine --machine=asvrunner --yes
 # asv run --durations=30 --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr --machine=asvrunner -b ^groupby.GroupByCythonAgg
 
-base_path = "pandas/asv_bench"
-machine = "asvrunner"
-response = subprocess.run(f"cd {base_path} && git rev-parse HEAD", shell=True, capture_output=True)
-githash = response.stdout.decode().strip()
-short_githash = githash[:8]
-paths = list(Path(f"{base_path}/results/{machine}/").glob(f"{short_githash}-existing*.json"))
-assert len(paths) == 1
-input_filename = paths[0]
+
+input_filename = "results.json"
 output_filename = "results.parquet"
 results = json.load(open(input_filename))
 columns = results["result_columns"]

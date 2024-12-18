@@ -12,57 +12,77 @@ env:
 permissions:
   contents: read
 
-# pre-commit run by https://pre-commit.ci/
 jobs:
-  asv-benchmarks:
-      name: ASV Benchmarks
-      runs-on: ubuntu-24.04
-      defaults:
-        run:
-          shell: bash -el {0}
+  produce-asv-benchmarks:
+    name: ASV Benchmarks
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
 
-      steps:
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: pandas-dev/pandas
+        fetch-depth: 0
+
+    - name: Set up Conda
+      uses: ./.github/actions/setup-conda
+
+    - name: Build pandas
+      uses: ./.github/actions/build_pandas
+
+    - name: Run ASV Benchmarks
+      run: |
+        cd asv_bench
+        asv machine --yes
+        asv run --durations=30 --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr --machine=asvrunner -b ^groupby.GroupByCythonAgg 
+        # Move to a standard location
+        mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
+
+    - name: Save JSON results as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: results.json
+        path: asv_bench/results/asvrunner/results.json
+        retention-days: 14
+
+  process-asv-benchmarks:
+    name: Process ASV Benchmarks
+    needs: produce-asv-benchmarks
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          path: asv-runner
+          python-version: '3.12'
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Upgrade build dependencies
+        run: pip install -U pip uv
+
+      - name: Install dependencies
+        run: uv pip install pandas pyarrow
+
+      - name: Download JSON results
+        uses: actions/download-artifact@v4
         with:
-          repository: pandas-dev/pandas
-          fetch-depth: 0
-          path: pandas
-
-      - name: Copy pandas condarc
-        run: |
-          mkdir ci
-          cp ./pandas/ci/.condarc ci/.condarc
-
-      - name: Show files
-        run: ls -la
-
-      - name: Set up Conda
-        uses: ./.github/actions/setup-conda
-        with:
-          environment-file: ./pandas/environment.yml
-
-      - name: Build Pandas
-        uses: ./.github/actions/build_pandas
-
-      - name: Run ASV benchmarks
-        run: |
-          cd pandas/asv_bench
-          asv machine --yes
-          asv run --durations=30 --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr --machine=asvrunner -b ^groupby.GroupByCythonAgg 
+          name: results.json
 
       - name: Process ASV results
         run: |
-          python asv-runner/process_results.py
+          python process_results.py
           
-      - name: Save results as an artifact
+      - name: Save parquet results as an artifact
         uses: actions/upload-artifact@v4
         with:
-          name: results
+          name: results.parquet
           path: results.parquet
           retention-days: 14
