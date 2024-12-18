@@ -43,13 +43,11 @@ jobs:
         run: ls -la
 
       - name: Set up Conda
-        working-directory: ./pandas
         uses: ./.github/actions/setup-conda
         with:
           environment-file: ./pandas/environment.yml
 
       - name: Build Pandas
-        working-directory: ./pandas
         uses: ./.github/actions/build_pandas
 
       - name: Run ASV benchmarks
