@@ -8,6 +8,7 @@ on:
 env:
   ENV_FILE: environment.yml
   PANDAS_CI: 1
+  BRANCH_NAME: test
 
 permissions:
   contents: read
@@ -55,10 +56,14 @@ jobs:
     defaults:
       run:
         shell: bash -el {0}
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -84,5 +89,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: results.parquet
-          path: results.parquet
+          path: data/results.parquet
           retention-days: 14
+
+      - name: Commit results
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Results
+          branch: ${{ env.BRANCH_NAME }}
