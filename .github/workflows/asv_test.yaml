@@ -1,7 +1,7 @@
 name: Run ASV
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *"
 
 env:
   ENV_FILE: environment.yml
