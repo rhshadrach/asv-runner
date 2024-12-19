@@ -14,7 +14,7 @@ buf = {"name": [], "params": [], "result": []}
 for name, benchmark in results['results'].items():
     data = dict(zip(columns, benchmark))
     result = data["result"]
-    params = ", ".join(it.product(*data["params"]))
+    params = [", ".join(e) for e in it.product(*data["params"])]
     buf["name"].extend([name] * len(result))
     buf["params"].extend(params)
     buf["result"].extend(result)
