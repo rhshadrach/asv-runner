@@ -14,12 +14,12 @@ buf = {"name": [], "params": [], "result": []}
 for name, benchmark in results['results'].items():
     data = dict(zip(columns, benchmark))
     result = data["result"]
-    params = list(it.product(*data["params"]))
+    params = ", ".join(it.product(*data["params"]))
     buf["name"].extend([name] * len(result))
     buf["params"].extend(params)
     buf["result"].extend(result)
 buf["name"] = pd.array(buf["name"], dtype="string[pyarrow]")
-buf["params"] = pd.array(buf["params"], dtype=pd.ArrowDtype(pa.list_(pa.string())))
+buf["params"] = pd.array(buf["params"], dtype="string[pyarrow]")
 buf["result"] = pd.array(buf["result"], dtype="float64[pyarrow]")
 df = pd.DataFrame(buf)
 df["date"] = pd.array([dt.datetime.today()] * len(df), dtype=pd.ArrowDtype(pa.timestamp("us")))
