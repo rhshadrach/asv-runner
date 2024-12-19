@@ -27,7 +27,7 @@ df["sha"] = pd.array([commit_hash] * len(df), dtype="string[pyarrow]")
 df = df[["date", "sha", "name", "params", "result"]]
 
 if os.path.exists("data/results.parquet"):
-    existing = pd.read_parquet("results.parquet")
+    existing = pd.read_parquet("data/results.parquet")
     final = pd.concat([existing, df])
 else:
     final = df
