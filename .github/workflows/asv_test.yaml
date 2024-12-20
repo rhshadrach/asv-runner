@@ -29,6 +29,11 @@ jobs:
         repository: pandas-dev/pandas
         fetch-depth: 0
 
+    - name: Show files
+      run: |
+        ls -l 
+        ls -l asv_bench/
+
     - name: Checkout html
       uses: actions/checkout@v4
       with:
@@ -36,17 +41,16 @@ jobs:
         fetch-depth: 0
         clean: false
         path:
-          asv_bench/
+          asv-runner/
 
     - name: Move html directory
       run: |
-        mv asv_bench/data/html asv_bench/html
+        mv asv-runner/data/html asv_bench/html
 
     - name: Show files
       run: |
         ls -l 
         ls -l asv_bench/
-        ls -l asv_bench/html
 
     - name: Set up Conda
       uses: ./.github/actions/setup-conda
