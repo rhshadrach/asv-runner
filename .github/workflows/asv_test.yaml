@@ -58,12 +58,19 @@ jobs:
         cd asv_bench
         asv machine --machine=asvrunner --yes
         asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
+        asv publish
 
     - name: Save results directory as an artifact
       uses: actions/upload-artifact@v4
       with:
         name: results
         path: asv_bench/results/
+
+    - name: Save html directory as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: html
+        path: asv_bench/html/
 
   process-asv-benchmarks:
     name: Process ASV Benchmarks
@@ -97,28 +104,38 @@ jobs:
         with:
           name: results
 
+      - name: Download html
+        uses: actions/download-artifact@v4
+        with:
+          name: html
+          path: data/html
+
       - name: Show files
         run: ls -l
 
       - name: Show files 2
         run: ls -l asvrunner/
 
-#      - name: Download results directory
-#
-#      - name: Process ASV results
-#        run: |
-#          python ci/process_results.py
-#
-#      - name: Save parquet results as an artifact
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: results.parquet
-#          path: data/results.parquet
-#          retention-days: 14
-#
-#      - name: Commit results
-#        uses: stefanzweifel/git-auto-commit-action@v5
-#        with:
-#          commit_message: Results
-#          branch: ${{ env.BRANCH_NAME }}
-#          file_pattern: data/results.parquet
+      - name: Show files 3
+        run: ls -l data/
+
+      - name: Show files 4
+        run: ls -l data/html/
+
+      - name: Process ASV results
+        run: |
+          python ci/process_results.py
+
+      - name: Save parquet results as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: results.parquet
+          path: data/results.parquet
+          retention-days: 14
+
+      - name: Commit results
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Results
+          branch: ${{ env.BRANCH_NAME }}
+          file_pattern: 'data/results.parquet data/html'
