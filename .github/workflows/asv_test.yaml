@@ -106,10 +106,10 @@ jobs:
       - name: Install dependencies
         run: pip install pandas pyarrow
 
-      - name: Download results
+      - name: Download results.json
         uses: actions/download-artifact@v4
         with:
-          name: results
+          name: results.json
 
       - name: Download html
         uses: actions/download-artifact@v4
