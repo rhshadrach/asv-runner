@@ -123,9 +123,6 @@ jobs:
       - name: Show files 3
         run: ls -l data/
 
-      - name: Show files 4
-        run: ls -l data/html/
-
       - name: Process ASV results
         run: |
           python ci/process_results.py
