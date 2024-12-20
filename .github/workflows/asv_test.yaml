@@ -1,5 +1,8 @@
 name: Run ASV
 on:
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: "20 * * * *"
 
@@ -37,15 +40,12 @@ jobs:
         cd asv_bench
         asv machine --machine=asvrunner --yes
         asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
-        # Move to a standard location
-        mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
 
-    - name: Save JSON results as an artifact
+    - name: Save results directory as an artifact
       uses: actions/upload-artifact@v4
       with:
-        name: results.json
-        path: asv_bench/results.json
-        retention-days: 14
+        name: results
+        path: asv_bench/results/
 
   process-asv-benchmarks:
     name: Process ASV Benchmarks
@@ -74,25 +74,30 @@ jobs:
       - name: Install dependencies
         run: pip install pandas pyarrow
 
-      - name: Download JSON results
+      - name: Download results
         uses: actions/download-artifact@v4
         with:
-          name: results.json
+          name: results
 
-      - name: Process ASV results
-        run: |
-          python ci/process_results.py
-          
-      - name: Save parquet results as an artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: results.parquet
-          path: data/results.parquet
-          retention-days: 14
+      - name: Show files
+        run: ls -l
 
-      - name: Commit results
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Results
-          branch: ${{ env.BRANCH_NAME }}
-          file_pattern: data/results.parquet
+#      - name: Download results directory
+#
+#      - name: Process ASV results
+#        run: |
+#          python ci/process_results.py
+#
+#      - name: Save parquet results as an artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: results.parquet
+#          path: data/results.parquet
+#          retention-days: 14
+#
+#      - name: Commit results
+#        uses: stefanzweifel/git-auto-commit-action@v5
+#        with:
+#          commit_message: Results
+#          branch: ${{ env.BRANCH_NAME }}
+#          file_pattern: data/results.parquet
