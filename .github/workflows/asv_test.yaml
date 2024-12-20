@@ -46,7 +46,7 @@ jobs:
           fi
 
   produce-asv-benchmarks:
-    needs: 'check-latest-commit'
+    needs: check-new-commit
     if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
     name: ASV Benchmarks
     runs-on: ubuntu-24.04
