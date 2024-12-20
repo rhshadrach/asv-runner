@@ -37,14 +37,14 @@ jobs:
     - name: Checkout html
       uses: actions/checkout@v4
       with:
-        sparse-checkout:  data/html
+        sparse-checkout:  docs/
         fetch-depth: 0
         path:
           asv-runner/
 
     - name: Move html directory
       run: |
-        mv asv-runner/data/html asv_bench/html
+        mv asv-runner/docs/ asv_bench/html
 
     - name: Show files
       run: |
@@ -115,7 +115,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: html
-          path: data/html
+          path: docs/
 
       - name: Show files
         run: ls -l
@@ -142,4 +142,4 @@ jobs:
         with:
           commit_message: Results
           branch: ${{ env.BRANCH_NAME }}
-          file_pattern: 'data/'
+          file_pattern: 'data/ docs/'
