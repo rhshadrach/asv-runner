@@ -61,7 +61,7 @@ jobs:
       run: |
         cd asv_bench
         asv machine --machine=asvrunner --yes
-        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse --short=8 HEAD) -b ^groupby.GroupByCythonAgg 
+        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse --short=8 HEAD) --skip-existing -b ^groupby.GroupByCythonAgg 
         asv publish
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
