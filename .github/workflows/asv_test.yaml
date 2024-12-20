@@ -40,7 +40,7 @@ jobs:
 
     - name: Move html directory
       run: |
-        mv asv_bench/data/html asv_bench/
+        mv asv_bench/data/html asv_bench/html
 
     - name: Show files
       run: |
