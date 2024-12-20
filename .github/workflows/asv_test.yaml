@@ -39,7 +39,6 @@ jobs:
       with:
         sparse-checkout:  data/html
         fetch-depth: 0
-        clean: false
         path:
           asv-runner/
 
@@ -62,14 +61,17 @@ jobs:
       run: |
         cd asv_bench
         asv machine --machine=asvrunner --yes
-        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
+        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse --short=8 HEAD) -b ^groupby.GroupByCythonAgg 
         asv publish
+        # Move to a standard location
+        mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
 
-    - name: Save results directory as an artifact
+    - name: Save JSON results as an artifact
       uses: actions/upload-artifact@v4
       with:
-        name: results
-        path: asv_bench/results/
+        name: results.json
+        path: asv_bench/results.json
+        retention-days: 14
 
     - name: Save html directory as an artifact
       uses: actions/upload-artifact@v4
@@ -143,4 +145,4 @@ jobs:
         with:
           commit_message: Results
           branch: ${{ env.BRANCH_NAME }}
-          file_pattern: 'data/results.parquet data/html'
+          file_pattern: 'data/'
