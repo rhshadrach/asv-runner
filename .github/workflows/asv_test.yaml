@@ -23,11 +23,25 @@ jobs:
         shell: bash -el {0}
 
     steps:
-    - name: Checkout
+    - name: Checkout pandas
       uses: actions/checkout@v4
       with:
         repository: pandas-dev/pandas
         fetch-depth: 0
+
+    - name: Checkout html
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout:  data/html
+        fetch-depth: 0
+        path:
+          asv_bench/
+
+    - name: Show files
+      run: |
+        ls -l 
+        ls -l asv_bench/
+        ls -l asv_bench/html
 
     - name: Set up Conda
       uses: ./.github/actions/setup-conda
