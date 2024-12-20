@@ -15,7 +15,39 @@ permissions:
   contents: read
 
 jobs:
+  check-new-commit:
+    name: Check Latest Commit
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
+    outputs:
+      new_commit: ${{ steps.new-commit.outputs.new_commit }}
+    steps:
+      - name: Checkout pandas
+        uses: actions/checkout@v4
+        with:
+          repository: pandas-dev/pandas
+
+      - name: Checkout asv-runner results branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          path: asv-runner/
+
+      - name: Compare Commit SHAs
+        id: new-commit
+        run: |
+          latest_benchmarked=
+          if [ "$(git rev-parse HEAD)" = "$(cat data/latest_sha.txt)" ]; then
+            echo "new_commit=no" >> "$GITHUB_OUTPUT"
+          then
+            echo "new_commit=yes" >> "$GITHUB_OUTPUT"
+          fi
+
   produce-asv-benchmarks:
+    needs: 'check-latest-commit'
+    if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
     name: ASV Benchmarks
     runs-on: ubuntu-24.04
     defaults:
@@ -62,6 +94,7 @@ jobs:
         asv publish
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
+        git rev-parse HEAD > latest_commit.txt
 
     - name: Save JSON results as an artifact
       uses: actions/upload-artifact@v4
@@ -76,9 +109,16 @@ jobs:
         name: html
         path: asv_bench/html/
 
+    - name: Save latest commit as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lastest_commit.txt
+        path: latest_commit.txt
+
   process-asv-benchmarks:
     name: Process ASV Benchmarks
-    needs: produce-asv-benchmarks
+    needs: [check-new-commit, produce-asv-benchmarks]
+    if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -113,6 +153,12 @@ jobs:
         with:
           name: html
           path: docs/
+
+      - name: Download latest_commit.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: latest_commit.txt
+          path: data/latest_commit.txt
 
       - name: Show files
         run: ls -l
