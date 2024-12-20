@@ -37,6 +37,10 @@ jobs:
         path:
           asv_bench/
 
+    - name: Move html directory
+      run: |
+        mv asv_bench/data/html asv_bench/
+
     - name: Show files
       run: |
         ls -l 
