@@ -82,6 +82,9 @@ jobs:
       - name: Show files
         run: ls -l
 
+      - name: Show files 2
+        run: ls -l asvrunner/
+
 #      - name: Download results directory
 #
 #      - name: Process ASV results
