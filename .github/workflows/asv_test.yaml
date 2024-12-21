@@ -38,8 +38,6 @@ jobs:
       - name: Compare Commit SHAs
         id: new-commit
         run: |
-          echo "HEAD sha: $(git rev-parse HEAD)"
-          echo "Latest sha: $(cat asv-runner/data/latest_sha.txt)"
           if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
             echo "new_commit=no"
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
