@@ -65,15 +65,15 @@ jobs:
         ls -l 
         ls -l asv_bench/
 
-    - name: Checkout asv-runner results branch
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ env.BRANCH_NAME }}
-        path: asv-runner/
-
-    - name: Move html directory
-      run: |
-        mv asv-runner/docs/ asv_bench/html
+#    - name: Checkout asv-runner results branch
+#      uses: actions/checkout@v4
+#      with:
+#        ref: ${{ env.BRANCH_NAME }}
+#        path: asv-runner/
+#
+#    - name: Move html directory
+#      run: |
+#        mv asv-runner/docs/ asv_bench/html
 
     - name: Show files
       run: |
