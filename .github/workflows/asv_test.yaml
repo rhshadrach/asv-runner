@@ -42,8 +42,10 @@ jobs:
           echo "Latest sha: $(cat asv-runner/data/latest_sha.txt)"
           echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
           if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
+            echo "new_commit=no"
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
           else
+            echo "new_commit=yes"
             echo "new_commit=yes" >> "$GITHUB_OUTPUT"
           fi
 
