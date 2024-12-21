@@ -26,10 +26,12 @@ jobs:
     outputs:
       new_commit: ${{ steps.new-commit.outputs.new_commit }}
     steps:
+      # In order to run pandas' actions, we have to checkout into the root directory
       - name: Checkout pandas
         uses: actions/checkout@v4
         with:
           repository: pandas-dev/pandas
+          fetch-depth: 0
 
       - name: Checkout asv-runner results branch
         uses: actions/checkout@v4
@@ -49,6 +51,7 @@ jobs:
           fi
           echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
 
+      # Prevent another job from kicking off and running on this commit
       - name: Update latest_sha.txt
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -58,113 +61,34 @@ jobs:
           repository: asv-runner
           file_pattern: 'data/latest_sha.txt'
 
-  produce-asv-benchmarks:
-    needs: check-new-commit
-    if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
-    name: ASV Benchmarks
-    runs-on: ubuntu-24.04
-    defaults:
-      run:
-        shell: bash -el {0}
+      - name: Move results directory
+        run: |
+          mv asv-runner/data/results asv_bench/results
 
-    steps:
-    - name: Checkout pandas
-      uses: actions/checkout@v4
-      with:
-        repository: pandas-dev/pandas
-        fetch-depth: 0
+      - name: Set up Conda
+        uses: ./.github/actions/setup-conda
 
-    - name: Checkout asv-runner results branch
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ env.BRANCH_NAME }}
-        path: asv-runner/
+      - name: Build pandas
+        uses: ./.github/actions/build_pandas
 
-    - name: Move html directory
-      run: |
-        mv asv-runner/docs/ asv_bench/html
-
-    - name: Set up Conda
-      uses: ./.github/actions/setup-conda
-
-    - name: Build pandas
-      uses: ./.github/actions/build_pandas
-
-    - name: Run ASV Benchmarks
-      run: |
-        cd asv_bench
-        asv machine --machine=asvrunner --yes
-        asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
-        asv publish
-        # Move to a standard location
-        mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
-
-    - name: Save JSON results as an artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: results.json
-        path: asv_bench/results.json
-        retention-days: 14
-
-    - name: Save html directory as an artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: html
-        path: asv_bench/html/
-
-  process-asv-benchmarks:
-    name: Process ASV Benchmarks
-    needs: [check-new-commit, produce-asv-benchmarks]
-    if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
-    runs-on: ubuntu-24.04
-    defaults:
-      run:
-        shell: bash -el {0}
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH_NAME }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Upgrade build dependencies
-        run: pip install -U pip
-
-      - name: Install dependencies
-        run: pip install pandas pyarrow
-
-      - name: Download results.json
-        uses: actions/download-artifact@v4
-        with:
-          name: results.json
-
-      - name: Download html
-        uses: actions/download-artifact@v4
-        with:
-          name: html
-          path: docs/
+      - name: Run ASV Benchmarks
+        run: |
+          cd asv_bench
+          asv machine --machine=asvrunner --yes
+          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
+          asv publish
+          # Move results to a fixed location
+          cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
+          mv --force html/ ../asv-runner/docs
 
       - name: Process ASV results
         run: |
-          python ci/process_results.py
-
-      - name: Save parquet results as an artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: results.parquet
-          path: data/results.parquet
-          retention-days: 14
+          python ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
 
       - name: Commit results
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Results
           branch: ${{ env.BRANCH_NAME }}
-          file_pattern: 'data/results.parquet docs/'
+          repository: asv-runner
+          file_pattern: 'data/results.parquet data/results/ docs/'
