@@ -40,7 +40,6 @@ jobs:
         run: |
           echo "HEAD sha: $(git rev-parse HEAD)"
           echo "Latest sha: $(cat asv-runner/data/latest_sha.txt)"
-          echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
           if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
             echo "new_commit=no"
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
@@ -48,6 +47,7 @@ jobs:
             echo "new_commit=yes"
             echo "new_commit=yes" >> "$GITHUB_OUTPUT"
           fi
+          echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
 
       - name: Update latest_sha.txt
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
