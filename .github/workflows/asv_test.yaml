@@ -95,7 +95,7 @@ jobs:
         asv publish
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
-        git rev-parse HEAD > latest_commit.txt
+        git rev-parse HEAD > latest_sha.txt
 
     - name: Save JSON results as an artifact
       uses: actions/upload-artifact@v4
@@ -110,11 +110,11 @@ jobs:
         name: html
         path: asv_bench/html/
 
-    - name: Save latest commit as an artifact
+    - name: Save latest_sha.txt as an artifact
       uses: actions/upload-artifact@v4
       with:
-        name: lastest_commit.txt
-        path: latest_commit.txt
+        name: latest_sha.txt
+        path: latest_sha.txt
 
   process-asv-benchmarks:
     name: Process ASV Benchmarks
@@ -155,11 +155,11 @@ jobs:
           name: html
           path: docs/
 
-      - name: Download latest_commit.txt
+      - name: Download latest_sha.txt
         uses: actions/download-artifact@v4
         with:
-          name: latest_commit.txt
-          path: data/latest_commit.txt
+          name: latest_sha.txt
+          path: data/latest_sha.txt
 
       - name: Show files
         run: ls -l
