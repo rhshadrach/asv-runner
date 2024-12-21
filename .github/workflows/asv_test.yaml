@@ -114,7 +114,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: latest_sha.txt
-        path: latest_sha.txt
+        path: asv_bench/latest_sha.txt
 
   process-asv-benchmarks:
     name: Process ASV Benchmarks
