@@ -79,11 +79,11 @@ jobs:
           asv publish
           # Move results to a fixed location
           cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
-          mv --force html/ ../asv-runner/docs
 
       - name: Process ASV results
         run: |
-          python ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
+          python asv-runner/ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
+          mv --force html/ ../asv-runner/docs
 
       - name: Commit results
         uses: stefanzweifel/git-auto-commit-action@v5
