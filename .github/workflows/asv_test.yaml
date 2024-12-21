@@ -1,5 +1,8 @@
 name: Run ASV
 on:
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: "20 * * * *"
 
@@ -12,7 +15,40 @@ permissions:
   contents: read
 
 jobs:
+  check-new-commit:
+    name: Check Latest Commit
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
+    outputs:
+      new_commit: ${{ steps.new-commit.outputs.new_commit }}
+    steps:
+      - name: Checkout pandas
+        uses: actions/checkout@v4
+        with:
+          repository: pandas-dev/pandas
+
+      - name: Checkout asv-runner results branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          path: asv-runner/
+
+      - name: Compare Commit SHAs
+        id: new-commit
+        run: |
+          echo "HEAD sha: $(git rev-parse HEAD)"
+          echo "Latest sha: $(cat asv-runner/data/latest_sha.txt)"
+          if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
+            echo "new_commit=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "new_commit=yes" >> "$GITHUB_OUTPUT"
+          fi
+
   produce-asv-benchmarks:
+    needs: check-new-commit
+    if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
     name: ASV Benchmarks
     runs-on: ubuntu-24.04
     defaults:
@@ -20,11 +56,21 @@ jobs:
         shell: bash -el {0}
 
     steps:
-    - name: Checkout
+    - name: Checkout pandas
       uses: actions/checkout@v4
       with:
         repository: pandas-dev/pandas
         fetch-depth: 0
+
+    - name: Checkout asv-runner results branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_NAME }}
+        path: asv-runner/
+
+    - name: Move html directory
+      run: |
+        mv asv-runner/docs/ asv_bench/html
 
     - name: Set up Conda
       uses: ./.github/actions/setup-conda
@@ -37,8 +83,10 @@ jobs:
         cd asv_bench
         asv machine --machine=asvrunner --yes
         asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
+        asv publish
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
+        git rev-parse HEAD > latest_sha.txt
 
     - name: Save JSON results as an artifact
       uses: actions/upload-artifact@v4
@@ -47,9 +95,22 @@ jobs:
         path: asv_bench/results.json
         retention-days: 14
 
+    - name: Save html directory as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: html
+        path: asv_bench/html/
+
+    - name: Save latest_sha.txt as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: latest_sha.txt
+        path: asv_bench/latest_sha.txt
+
   process-asv-benchmarks:
     name: Process ASV Benchmarks
-    needs: produce-asv-benchmarks
+    needs: [check-new-commit, produce-asv-benchmarks]
+    if: ${{ needs.check-new-commit.outputs.new_commit == 'yes' }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -74,15 +135,27 @@ jobs:
       - name: Install dependencies
         run: pip install pandas pyarrow
 
-      - name: Download JSON results
+      - name: Download results.json
         uses: actions/download-artifact@v4
         with:
           name: results.json
 
+      - name: Download html
+        uses: actions/download-artifact@v4
+        with:
+          name: html
+          path: docs/
+
+      - name: Download latest_sha.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: latest_sha.txt
+          path: data/
+
       - name: Process ASV results
         run: |
           python ci/process_results.py
-          
+
       - name: Save parquet results as an artifact
         uses: actions/upload-artifact@v4
         with:
@@ -95,4 +168,4 @@ jobs:
         with:
           commit_message: Results
           branch: ${{ env.BRANCH_NAME }}
-          file_pattern: data/results.parquet
+          file_pattern: 'data/ docs/'
