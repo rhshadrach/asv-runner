@@ -40,11 +40,21 @@ jobs:
         run: |
           echo "HEAD sha: $(git rev-parse HEAD)"
           echo "Latest sha: $(cat asv-runner/data/latest_sha.txt)"
+          echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
           if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
           else
             echo "new_commit=yes" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Update latest_sha.txt
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update latest SHA
+          branch: ${{ env.BRANCH_NAME }}
+          repository: asv-runner
+          file_pattern: 'data/latest_sha.txt'
 
   produce-asv-benchmarks:
     needs: check-new-commit
@@ -86,7 +96,6 @@ jobs:
         asv publish
         # Move to a standard location
         mv results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
-        git rev-parse HEAD > latest_sha.txt
 
     - name: Save JSON results as an artifact
       uses: actions/upload-artifact@v4
@@ -100,12 +109,6 @@ jobs:
       with:
         name: html
         path: asv_bench/html/
-
-    - name: Save latest_sha.txt as an artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: latest_sha.txt
-        path: asv_bench/latest_sha.txt
 
   process-asv-benchmarks:
     name: Process ASV Benchmarks
@@ -146,12 +149,6 @@ jobs:
           name: html
           path: docs/
 
-      - name: Download latest_sha.txt
-        uses: actions/download-artifact@v4
-        with:
-          name: latest_sha.txt
-          path: data/
-
       - name: Process ASV results
         run: |
           python ci/process_results.py
@@ -168,4 +165,4 @@ jobs:
         with:
           commit_message: Results
           branch: ${{ env.BRANCH_NAME }}
-          file_pattern: 'data/ docs/'
+          file_pattern: 'data/results.parquet docs/'
