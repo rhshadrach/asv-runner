@@ -9,6 +9,9 @@ on:
 env:
   ENV_FILE: environment.yml
   PANDAS_CI: 1
+  # Results and other data are stored away from the main branch.
+  # This keeps the main branch clean and allows us to clear out
+  # objects / history after being built up for long periods of time.
   BRANCH_NAME: test
 
 permissions:
@@ -26,7 +29,7 @@ jobs:
     outputs:
       new_commit: ${{ steps.new-commit.outputs.new_commit }}
     steps:
-      # In order to run pandas' actions, we have to checkout into the root directory
+      # In order to run pandas' actions, we have to checkout into the root directory.
       - name: Checkout pandas
         uses: actions/checkout@v4
         with:
@@ -51,15 +54,15 @@ jobs:
           fi
           echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
 
-      # Prevent another job from kicking off and running on this commit
-      - name: Update latest_sha.txt
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Update latest SHA
-          branch: ${{ env.BRANCH_NAME }}
-          repository: asv-runner
-          file_pattern: 'data/latest_sha.txt'
+#      # Prevent another job from kicking off and running on this commit
+#      - name: Update latest_sha.txt
+#        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+#        uses: stefanzweifel/git-auto-commit-action@v5
+#        with:
+#          commit_message: Update latest SHA
+#          branch: ${{ env.BRANCH_NAME }}
+#          repository: asv-runner
+#          file_pattern: 'data/latest_sha.txt'
 
       - name: Move results directory
         run: |
@@ -92,3 +95,14 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
           repository: asv-runner
           file_pattern: 'data/results.parquet data/results/ docs/'
+
+      # TODO: Remove
+      # Prevent another job from kicking off and running on this commit
+      - name: Update latest_sha.txt
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update latest SHA
+          branch: ${{ env.BRANCH_NAME }}
+          repository: asv-runner
+          file_pattern: 'data/latest_sha.txt'
