@@ -21,6 +21,8 @@ jobs:
     defaults:
       run:
         shell: bash -el {0}
+    permissions:
+      contents: write
     outputs:
       new_commit: ${{ steps.new-commit.outputs.new_commit }}
     steps:
