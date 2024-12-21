@@ -65,16 +65,20 @@ jobs:
           file_pattern: 'data/latest_sha.txt'
 
       - name: Move results directory
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
           mv asv-runner/data/results asv_bench/results
 
       - name: Set up Conda
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         uses: ./.github/actions/setup-conda
 
       - name: Build pandas
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         uses: ./.github/actions/build_pandas
 
       - name: Run ASV Benchmarks
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
           cd asv_bench
           asv machine --machine=asvrunner --yes
@@ -84,12 +88,14 @@ jobs:
           cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
 
       - name: Process ASV results
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
           python asv-runner/ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
           cp -r asv_bench/results/ asv-runner/data/results/
           mv --force asv_bench/html/ asv-runner/docs
 
       - name: Commit results to branch
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Results
