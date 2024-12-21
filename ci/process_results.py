@@ -29,12 +29,13 @@ def run(input_path: str, output_path: str | Path):
     df["sha"] = pd.array([commit_hash] * len(df), dtype="string[pyarrow]")
     df = df[["date", "sha", "name", "params", "result"]]
 
-    if os.path.exists(output_path / "results.parquet"):
-        existing = pd.read_parquet(output_path / "results.parquet")
+    parquet_path = output_path / "results.parquet"
+    if os.path.exists(parquet_path):
+        existing = pd.read_parquet(parquet_path)
         final = pd.concat([existing, df])
     else:
         final = df
-    final.to_parquet(output_path)
+    final.to_parquet(parquet_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

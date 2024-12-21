@@ -18,8 +18,8 @@ permissions:
   contents: read
 
 jobs:
-  check-new-commit:
-    name: Check Latest Commit
+  asv:
+    name: Run ASVs
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -88,7 +88,7 @@ jobs:
           python asv-runner/ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
           mv --force html/ ../asv-runner/docs
 
-      - name: Commit results
+      - name: Commit results to ${{ env.BRANCH_NAME }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Results
