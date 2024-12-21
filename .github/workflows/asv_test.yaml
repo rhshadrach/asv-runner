@@ -39,7 +39,7 @@ jobs:
         id: new-commit
         run: |
           latest_benchmarked=
-          if [ "$(git rev-parse HEAD)" = "$(cat data/latest_sha.txt)" ]; then
+          if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
           else
             echo "new_commit=yes" >> "$GITHUB_OUTPUT"
