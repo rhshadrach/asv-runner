@@ -38,7 +38,8 @@ jobs:
       - name: Compare Commit SHAs
         id: new-commit
         run: |
-          latest_benchmarked=
+          echo "HEAD sha: $(git rev-parse HEAD)"
+          echo "Latest sha: $(cat asv-runner/data/latest_sha.txt)"
           if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
           else
@@ -61,11 +62,6 @@ jobs:
         repository: pandas-dev/pandas
         fetch-depth: 0
 
-    - name: Show files
-      run: |
-        ls -l 
-        ls -l asv_bench/
-
     - name: Checkout asv-runner results branch
       uses: actions/checkout@v4
       with:
@@ -75,11 +71,6 @@ jobs:
     - name: Move html directory
       run: |
         mv asv-runner/docs/ asv_bench/html
-
-    - name: Show files
-      run: |
-        ls -l 
-        ls -l asv_bench/
 
     - name: Set up Conda
       uses: ./.github/actions/setup-conda
@@ -160,12 +151,6 @@ jobs:
         with:
           name: latest_sha.txt
           path: data/
-
-      - name: Show files
-        run: ls -l
-
-      - name: Show files 3
-        run: ls -l data/
 
       - name: Process ASV results
         run: |
