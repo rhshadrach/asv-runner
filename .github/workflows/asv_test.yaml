@@ -86,8 +86,8 @@ jobs:
       - name: Process ASV results
         run: |
           python asv-runner/ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
-          cp -r asv_bench/results/ ../asv-runner/data/results/
-          mv --force asv_bench/html/ ../asv-runner/docs
+          cp -r asv_bench/results/ asv-runner/data/results/
+          mv --force asv_bench/html/ asv-runner/docs
 
       - name: Commit results to ${{ env.BRANCH_NAME }}
         uses: stefanzweifel/git-auto-commit-action@v5
