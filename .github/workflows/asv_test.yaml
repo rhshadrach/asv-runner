@@ -92,7 +92,8 @@ jobs:
         run: |
           python asv-runner/ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
           cp -r asv_bench/results/ asv-runner/data/results/
-          mv --force asv_bench/html/ asv-runner/docs
+          rm -rf asv-runner/docs/*
+          mv asv_bench/html/ asv-runner/docs
 
       - name: Commit results to branch
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
