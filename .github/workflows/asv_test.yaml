@@ -85,14 +85,15 @@ jobs:
           asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg 
           asv publish
           # Move results to a fixed location
+          cp results/benchmarks.json benchmarks.json
           cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
 
       - name: Process ASV results
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
-          python asv-runner/ci/process_results.py --input-path=asv_bench/results.json --output-path=asv-runner/data
+          python asv-runner/ci/process_results.py --input-path=asv_bench/ --output-path=asv-runner/data
           cp -r asv_bench/results/ asv-runner/data/results/
-          rm -rf asv-runner/docs/*
+          rm -rf asv-runner/docs
           mv asv_bench/html/ asv-runner/docs
 
       - name: Commit results to branch
