@@ -7,17 +7,23 @@ import os
 import argparse
 from pathlib import Path
 
-def run(input_path: str, output_path: str | Path):
+def run(input_path: str | Path, output_path: str | Path):
+    if not isinstance(input_path, Path):
+        input_path = Path(input_path)
     if not isinstance(output_path, Path):
         output_path = Path(output_path)
-    results = json.load(open(input_path))
+    data = json.load(open(input_path / "benchmarks.json"))
+    benchmark_to_param_names = {k: v["param_names"] for k, v in data.items() if k != "version"}
+
+    results = json.load(open(input_path / "results.json"))
     commit_hash = results["commit_hash"]
     columns = results["result_columns"]
     buf = {"name": [], "params": [], "result": []}
     for name, benchmark in results['results'].items():
         data = dict(zip(columns, benchmark))
         result = data["result"]
-        params = [", ".join(e) for e in it.product(*data["params"])]
+        param_names = benchmark_to_param_names[name]
+        params = [", ".join(f"{k}=v" for k, v in zip(param_names, e)) for e in it.product(*data["params"])]
         buf["name"].extend([name] * len(result))
         buf["params"].extend(params)
         buf["result"].extend(result)
