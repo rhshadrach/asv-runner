@@ -23,7 +23,7 @@ def run(input_path: str | Path, output_path: str | Path):
         data = dict(zip(columns, benchmark))
         result = data["result"]
         param_names = benchmark_to_param_names[name]
-        params = [", ".join(f"{k}=v" for k, v in zip(param_names, e)) for e in it.product(*data["params"])]
+        params = [", ".join(f"{k}={v}" for k, v in zip(param_names, e)) for e in it.product(*data["params"])]
         buf["name"].extend([name] * len(result))
         buf["params"].extend(params)
         buf["result"].extend(result)
