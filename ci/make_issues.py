@@ -117,6 +117,5 @@ def run(input_path: str | Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-path")
-    parser.add_argument("--output-path")
     args = parser.parse_args()
     run(input_path=args.input_path)

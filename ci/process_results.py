@@ -7,6 +7,35 @@ import os
 import argparse
 from pathlib import Path
 
+def detect_regression(data: pd.DataFrame, window_size: int = 1) -> pd.DataFrame:
+    data = data[data["result"].notnull()].set_index(["name", "params", "date"]).sort_index()
+    keys = ["name", "params"]
+    tol = 0.95
+
+    data["established_worst"] = (
+        data.groupby(keys, as_index=False)["result"]
+        .rolling(window_size, center=True)
+        .max()[["result"]]
+    )
+    data["established_best"] = (
+        data.groupby(keys, as_index=False)["result"]
+        .rolling(window_size, center=True)
+        .min()[["result"]]
+    )
+
+    mask = (
+        # TODO: is the arg to shift right?
+        data["established_worst"].groupby(keys).shift(window_size)
+        < tol * data["established_best"]
+    )
+    mask = mask & ~mask.groupby(keys).shift(1, fill_value=False)
+    mask = mask.groupby(keys).shift(-(window_size - 1) // 2, fill_value=False)
+
+    data["is_regression"] = mask
+    data["pct_change"] = data.groupby(keys)["result"].pct_change()
+    data["abs_change"] = data["result"] - data.groupby(keys)["result"].shift(1)
+    return data.reset_index()
+
 def run(input_path: str | Path, output_path: str | Path):
     if not isinstance(input_path, Path):
         input_path = Path(input_path)
@@ -34,6 +63,7 @@ def run(input_path: str | Path, output_path: str | Path):
     df["date"] = pd.array([dt.datetime.today()] * len(df), dtype=pd.ArrowDtype(pa.timestamp("us")))
     df["sha"] = pd.array([commit_hash] * len(df), dtype="string[pyarrow]")
     df = df[["date", "sha", "name", "params", "result"]]
+    df = detect_regression(df, window_size=1)
 
     parquet_path = output_path / "results.parquet"
     if os.path.exists(parquet_path):
