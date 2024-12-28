@@ -104,3 +104,9 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
           repository: asv-runner
           file_pattern: 'data/results.parquet data/results/ docs/'
+
+      - name: Make issues for new regressions
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        run: python asv-runner/ci/make_issues.py --input-path=asv-runner/data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
