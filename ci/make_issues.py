@@ -69,13 +69,6 @@ def run(input_path: str | Path):
         if result != "":
             continue
 
-        commit_range = get_commit_range(benchmarks=benchmarks, sha=sha)
-        # TODO: Use checkout path
-        response = execute(
-            f"cd /home/richard/dev/pandas"
-            f" && git rev-list --ancestry-path {commit_range}"
-        )
-
         title = f"Commit {sha}"
         base_url = "https://github.com/pandas-dev/pandas/compare/"
         body = f"[Commit Range]({base_url + get_commit_range(benchmarks=benchmarks, sha=sha)})"
