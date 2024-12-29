@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import subprocess
 import argparse
+import time
 
 def get_commit_range(*, benchmarks: pd.DataFrame, sha: str) -> str:
     """Get commit range between a hash and the previous hash that has a benchmark.
@@ -63,6 +64,8 @@ def run(input_path: str | Path):
         [-20:]
     )
     for sha in regression_shas:
+        # Avoid GitHub rate limits
+        time.sleep(2)
         needle = f"Commit {sha}"
         cmd = f'gh search issues --repo rhshadrach/asv-runner "{needle}"'
         result = execute(cmd)
