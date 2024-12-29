@@ -12,7 +12,7 @@ keywords = [
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">= 3.8"
-dynamic = ["version"]
+version = "0.0.1"
 dependencies = ["pandas", "pyarrow"]
 classifiers=[
     'Development Status :: 4 - Beta',
@@ -28,9 +28,6 @@ classifiers=[
     'Operating System :: OS Independent',
     'Topic :: Benchmarks',
 ]
-
-[tool.setuptools.dynamic]
-version = "0.0.1"
 
 [project.urls]
 Documentation = "https://github.com/rhshadrach/asv-runner/tree/main#readme"
