@@ -62,16 +62,18 @@ def run(input_path: str | Path, output_path: str | Path):
     df = pd.DataFrame(buf)
     df["date"] = pd.array([dt.datetime.today()] * len(df), dtype=pd.ArrowDtype(pa.timestamp("us")))
     df["sha"] = pd.array([commit_hash] * len(df), dtype="string[pyarrow]")
-    df = df[["date", "sha", "name", "params", "result"]]
-    df = detect_regression(df, window_size=1)
+
+    columns = ["date", "sha", "name", "params", "result"]
+    df = df[columns]
 
     parquet_path = output_path / "results.parquet"
     if os.path.exists(parquet_path):
-        existing = pd.read_parquet(parquet_path)
-        final = pd.concat([existing, df])
+        existing = pd.read_parquet(parquet_path)[columns]
+        result = pd.concat([existing, df])
     else:
-        final = df
-    final.to_parquet(parquet_path)
+        result = df
+    result = detect_regression(result, window_size=1)
+    result.to_parquet(parquet_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
