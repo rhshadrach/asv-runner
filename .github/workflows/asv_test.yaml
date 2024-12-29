@@ -26,6 +26,7 @@ jobs:
         shell: bash -el {0}
     permissions:
       contents: write
+      issues: write
     outputs:
       new_commit: ${{ steps.new-commit.outputs.new_commit }}
     steps:
