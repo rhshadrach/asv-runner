@@ -1,9 +1,12 @@
-import urllib.parse
-import pandas as pd
-from pathlib import Path
+from __future__ import annotations
+
+import argparse
 import re
 import subprocess
-import argparse
+import urllib.parse
+from pathlib import Path
+
+import pandas as pd
 
 
 def get_commit_range(*, benchmarks: pd.DataFrame, sha: str) -> str:
@@ -27,7 +30,7 @@ def get_commit_range(*, benchmarks: pd.DataFrame, sha: str) -> str:
 
 
 def execute(cmd):
-    response = subprocess.run(cmd, shell=True, capture_output=True)
+    response = subprocess.run(cmd, shell=True, capture_output=True, check=False)
     if response.returncode != 0:
         raise ValueError(f"{response.stdout.decode()}\n\n{response.stderr.decode()}")
     return response.stdout.decode()
@@ -43,9 +46,9 @@ def time_to_str(x: float) -> str:
     is_negative = x < 0.0
     if x >= 1.0:
         result = f"{x:0.3f}s"
-    elif x >= 0.001:
+    elif x >= 0.001:  # noqa: PLR2004
         result = f"{x * 1000:0.3f}ms"
-    elif x >= 0.000001:
+    elif x >= 0.000001:  # noqa: PLR2004
         result = f"{x * (1000 ** 2):0.3f}us"
     else:
         result = f"{x * (1000 ** 3):0.3f}ns"
@@ -74,7 +77,8 @@ def run(input_path: str | Path):
 
         title = f"Commit {sha}"
         base_url = "https://github.com/pandas-dev/pandas/compare/"
-        body = f"[Commit Range]({base_url + get_commit_range(benchmarks=benchmarks, sha=sha)})"
+        commit_range = get_commit_range(benchmarks=benchmarks, sha=sha)
+        body = f"[Commit Range]({base_url + commit_range})"
         body += "\n\n"
         body += (
             "Subsequent benchmarks may have skipped some commits. The link"
@@ -86,18 +90,19 @@ def run(input_path: str | Path):
         regressions = benchmarks[
             benchmarks["sha"].eq(sha) & benchmarks["is_regression"]
         ]
-        for idx, regression in regressions.iterrows():
+        for _, regression in regressions.iterrows():
             benchmark = regression["name"]
             params = regression["params"]
             base_url = "https://rhshadrach.github.io/asv-runner/#"
             url = f"{base_url}{benchmark}"
-            severity = f"{regression['pct_change']:0.3%} ({time_to_str(regression['abs_change'])})"
+            abs_change = time_to_str(regression["abs_change"])
+            severity = f"{regression['pct_change']:0.3%} ({abs_change})"
             body += f" - [ ] [{benchmark}]({url})"
             if params == "":
                 result += f" - {severity}\n"
                 continue
             body += "\n"
-            params_list = [param for param in params.split(", ")]
+            params_list = list(params.split(", "))
             params_suffix = "?p-" + "&p-".join(params_list)
             url = f"{base_url}{benchmark}{params_suffix}"
             url = urllib.parse.quote(url, safe="/:?=&#")

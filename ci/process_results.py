@@ -1,11 +1,14 @@
-import json
-import datetime as dt
-import pyarrow as pa
-import itertools as it
-import pandas as pd
-import os
+from __future__ import annotations
+
 import argparse
+import datetime as dt
+import itertools as it
+import json
+import os
 from pathlib import Path
+
+import pandas as pd
+import pyarrow as pa
 
 
 def detect_regression(data: pd.DataFrame, window_size: int = 1) -> pd.DataFrame:
@@ -47,12 +50,14 @@ def run(input_path: str | Path, output_path: str | Path):
         input_path = Path(input_path)
     if not isinstance(output_path, Path):
         output_path = Path(output_path)
-    data = json.load(open(input_path / "benchmarks.json"))
+    with open(input_path / "benchmarks.json") as fh:
+        data = json.load(fh)
     benchmark_to_param_names = {
         k: v["param_names"] for k, v in data.items() if k != "version"
     }
 
-    results = json.load(open(input_path / "results.json"))
+    with open(input_path / "results.json") as fh:
+        results = json.load(fh)
     commit_hash = results["commit_hash"]
     columns = results["result_columns"]
     buf: dict[str, list] = {"name": [], "params": [], "result": []}
