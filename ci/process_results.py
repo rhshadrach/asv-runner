@@ -60,7 +60,8 @@ def run(input_path: str | Path, output_path: str | Path):
     buf["params"] = pd.array(buf["params"], dtype="string[pyarrow]")
     buf["result"] = pd.array(buf["result"], dtype="float64[pyarrow]")
     df = pd.DataFrame(buf)
-    df["date"] = pd.array([dt.datetime.today()] * len(df), dtype=pd.ArrowDtype(pa.timestamp("us")))
+    timestamp = dt.datetime.fromtimestamp(results['date']/1000)
+    df["date"] = pd.array([timestamp] * len(df), dtype=pd.ArrowDtype(pa.timestamp("us")))
     df["sha"] = pd.array([commit_hash] * len(df), dtype="string[pyarrow]")
 
     columns = ["date", "sha", "name", "params", "result"]
