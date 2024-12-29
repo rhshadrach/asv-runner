@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import re
 import subprocess
+import time
 import urllib.parse
 from pathlib import Path
 
@@ -69,6 +70,8 @@ def run(input_path: str | Path):
         .tolist()[-20:]
     )
     for sha in regression_shas:
+        # Avoid GitHub rate limits
+        time.sleep(2)
         needle = f"Commit {sha}"
         cmd = f'gh search issues --repo rhshadrach/asv-runner "{needle}"'
         result = execute(cmd)
