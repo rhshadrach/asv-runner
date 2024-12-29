@@ -1,9 +1,10 @@
-import urllib
+import urllib.parse
 import pandas as pd
 from pathlib import Path
 import re
 import subprocess
 import argparse
+
 
 def get_commit_range(*, benchmarks: pd.DataFrame, sha: str) -> str:
     """Get commit range between a hash and the previous hash that has a benchmark.
@@ -24,16 +25,19 @@ def get_commit_range(*, benchmarks: pd.DataFrame, sha: str) -> str:
     result = f"{prev_sha}...{sha}"
     return result
 
+
 def execute(cmd):
     response = subprocess.run(cmd, shell=True, capture_output=True)
     if response.returncode != 0:
         raise ValueError(f"{response.stdout.decode()}\n\n{response.stderr.decode()}")
     return response.stdout.decode()
 
+
 # TODO: Try without this
 def escape_ansi(line):
     ansi_escape = re.compile(r"(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]")
     return ansi_escape.sub("", line)
+
 
 def time_to_str(x: float) -> str:
     is_negative = x < 0.0
@@ -49,6 +53,7 @@ def time_to_str(x: float) -> str:
         result = "-" + result
     return result
 
+
 def run(input_path: str | Path):
     if not isinstance(input_path, Path):
         input_path = Path(input_path)
@@ -56,11 +61,9 @@ def run(input_path: str | Path):
     regression_shas = (
         benchmarks[benchmarks["is_regression"]]
         .drop_duplicates(subset="sha")
-        .sort_values("date")
-        ["sha"]
+        .sort_values("date")["sha"]
         .unique()
-        .tolist()
-        [-20:]
+        .tolist()[-20:]
     )
     for sha in regression_shas:
         needle = f"Commit {sha}"
@@ -80,7 +83,9 @@ def run(input_path: str | Path):
             "\n\n"
         )
 
-        regressions = benchmarks[benchmarks["sha"].eq(sha) & benchmarks["is_regression"]]
+        regressions = benchmarks[
+            benchmarks["sha"].eq(sha) & benchmarks["is_regression"]
+        ]
         for idx, regression in regressions.iterrows():
             benchmark = regression["name"]
             params = regression["params"]
@@ -101,11 +106,12 @@ def run(input_path: str | Path):
 
         cmd = (
             f"gh issue create"
-            rf' --repo rhshadrach/asv-runner'
+            rf" --repo rhshadrach/asv-runner"
             rf' --title "{title}"'
             rf' --body "{body}"'
         )
         execute(cmd)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
