@@ -1,1 +1,1 @@
-{"regressions": [["groupby.GroupByCythonAggEaDtypes.time_frame_agg('Int32', 'median')", "graphs/Cython-3.0/branch-main/jinja2/machine-asvrunner/matplotlib/meson/meson-python/numba/numexpr/odfpy/openpyxl/pyarrow/python-3.10/python-build/scipy/sqlalchemy/tables/xlrd/xlsxwriter/groupby.GroupByCythonAggEaDtypes.time_frame_agg.json", {}, 27, 0.23517522900002064, 0.21203506300003028, [[38609, 38612, 0.21203506300003028, 0.23517522900002064]]]]}
+{"regressions": []}
