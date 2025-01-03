@@ -1,8 +1,8 @@
 name: Run ASV
 on:
-  pull_request:
-    branches:
-      - main
+#  pull_request:
+#    branches:
+#      - main
   schedule:
     - cron: "20 * * * *"
 
@@ -12,7 +12,7 @@ env:
   # Results and other data are stored away from the main branch.
   # This keeps the main branch clean and allows us to clear out
   # objects / history after being built up for long periods of time.
-  BRANCH_NAME: test
+  BRANCH_NAME: pandas_20240103
 
 permissions:
   contents: read
@@ -83,7 +83,7 @@ jobs:
         run: |
           cd asv_bench
           asv machine --machine=asvrunner --yes
-          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby.GroupByCythonAgg
+          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD)
           asv publish
           # Move results to a fixed location
           cp results/benchmarks.json benchmarks.json
