@@ -11,7 +11,7 @@ import pandas as pd
 import pyarrow as pa
 
 
-def detect_regression(data: pd.DataFrame, window_size: int = 1) -> pd.DataFrame:
+def detect_regression(data: pd.DataFrame, window_size: int = 21) -> pd.DataFrame:
     data = (
         data[data["result"].notnull()]
         .set_index(["name", "params", "date"])
@@ -91,7 +91,7 @@ def run(input_path: str | Path, output_path: str | Path):
         result = pd.concat([existing, df])
     else:
         result = df
-    result = detect_regression(result, window_size=1)
+    result = detect_regression(result, window_size=21)
     result.to_parquet(parquet_path)
 
 
