@@ -83,7 +83,7 @@ jobs:
         run: |
           cd asv_bench
           asv machine --machine=asvrunner --yes
-          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby
+          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD)
 
       - name: Publish ASV Benchmarks
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
