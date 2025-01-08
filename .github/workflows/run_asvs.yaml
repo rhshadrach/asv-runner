@@ -84,7 +84,15 @@ jobs:
           cd asv_bench
           asv machine --machine=asvrunner --yes
           asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby
+
+      - name: Publish ASV Benchmarks
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        run: |
           asv publish
+
+      - name: Move files
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        run: |
           # Move results to a fixed location
           cp results/benchmarks.json benchmarks.json
           cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
