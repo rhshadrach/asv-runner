@@ -12,7 +12,7 @@ env:
   # Results and other data are stored away from the main branch.
   # This keeps the main branch clean and allows us to clear out
   # objects / history after being built up for long periods of time.
-  BRANCH_NAME: test
+  BRANCH_NAME: pandas_20250108
 
 permissions:
   contents: read
@@ -83,8 +83,16 @@ jobs:
         run: |
           cd asv_bench
           asv machine --machine=asvrunner --yes
-          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) -b ^groupby
+          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD)
+
+      - name: Publish ASV Benchmarks
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        run: |
           asv publish
+
+      - name: Move files
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        run: |
           # Move results to a fixed location
           cp results/benchmarks.json benchmarks.json
           cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
