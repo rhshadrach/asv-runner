@@ -83,17 +83,18 @@ jobs:
         run: |
           cd asv_bench
           asv machine --machine=asvrunner --yes
-          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD)
+          asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr
 
       - name: Publish ASV Benchmarks
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
+          cd asv_bench
           asv publish
 
-      - name: Move files
+      - name: Move files to a fixed location
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
-          # Move results to a fixed location
+          cd asv_bench
           cp results/benchmarks.json benchmarks.json
           cp results/asvrunner/$(git rev-parse --short=8 HEAD)*.json results.json
 
