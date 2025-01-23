@@ -56,7 +56,13 @@ def run(input_path: str | Path, output_path: str | Path):
     }
 
     result_path = input_path / "results" / "asvrunner"
-    buf: dict[str, list] = {"date": [], "sha": [], "name": [], "params": [], "result": []}
+    buf: dict[str, list] = {
+        "date": [],
+        "sha": [],
+        "name": [],
+        "params": [],
+        "result": [],
+    }
     for result_json in result_path.glob("*existing*.json"):
         with open(result_json) as fh:
             results = json.load(fh)
