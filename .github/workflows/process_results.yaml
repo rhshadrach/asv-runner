@@ -52,7 +52,7 @@ jobs:
         run: uv pip install --system asv pandas
 
       - name: Show environment packages
-        run: uv pip --system freeze
+        run: uv pip freeze
 
       - name: Move results directory
         run: |
