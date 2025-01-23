@@ -49,7 +49,7 @@ jobs:
         run: pip install -U pip uv
 
       - name: Install job dependencies
-        run: uv pip install --system asv pandas
+        run: uv pip install --system asv pandas pyarrow
 
       - name: Show environment packages
         run: uv pip freeze
