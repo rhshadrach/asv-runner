@@ -86,6 +86,12 @@ jobs:
           asv machine --machine=asvrunner --yes
           asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr
 
+      - name: Update asv-runner branch
+        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        run: |
+          cd asv-runner
+          git pull
+
       - name: Move results into asv-runner
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
