@@ -4,7 +4,6 @@ import argparse
 import datetime as dt
 import itertools as it
 import json
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -50,47 +49,52 @@ def run(input_path: str | Path, output_path: str | Path):
         input_path = Path(input_path)
     if not isinstance(output_path, Path):
         output_path = Path(output_path)
-    with open(input_path / "benchmarks.json") as fh:
+    with open(input_path / "results" / "benchmarks.json") as fh:
         data = json.load(fh)
     benchmark_to_param_names = {
         k: v["param_names"] for k, v in data.items() if k != "version"
     }
 
-    with open(input_path / "results.json") as fh:
-        results = json.load(fh)
-    commit_hash = results["commit_hash"]
-    columns = results["result_columns"]
-    buf: dict[str, list] = {"name": [], "params": [], "result": []}
-    for name, benchmark in results["results"].items():
-        data = dict(zip(columns, benchmark))
-        result = data["result"]
-        param_names = benchmark_to_param_names[name]
-        params = [
-            ", ".join(f"{k}={v}" for k, v in zip(param_names, e))
-            for e in it.product(*data["params"])
-        ]
-        buf["name"].extend([name] * len(result))
-        buf["params"].extend(params)
-        buf["result"].extend(result)
+    result_path = input_path / "results" / "asvrunner"
+    buf: dict[str, list] = {
+        "date": [],
+        "sha": [],
+        "name": [],
+        "params": [],
+        "result": [],
+    }
+    for result_json in result_path.glob("*existing*.json"):
+        with open(result_json) as fh:
+            results = json.load(fh)
+        commit_hash = results["commit_hash"]
+        columns = results["result_columns"]
+
+        timestamp = dt.datetime.fromtimestamp(results["date"] / 1000)
+        for name, benchmark in results["results"].items():
+            data = dict(zip(columns, benchmark))
+            result = data["result"]
+            param_names = benchmark_to_param_names[name]
+            params = [
+                ", ".join(f"{k}={v}" for k, v in zip(param_names, e))
+                for e in it.product(*data["params"])
+            ]
+            buf["name"].extend([name] * len(result))
+            buf["params"].extend(params)
+            buf["result"].extend(result)
+            buf["date"].extend([timestamp] * len(result))
+            buf["sha"].extend([commit_hash] * len(result))
+
     buf["name"] = pd.array(buf["name"], dtype="string[pyarrow]")
     buf["params"] = pd.array(buf["params"], dtype="string[pyarrow]")
     buf["result"] = pd.array(buf["result"], dtype="float64[pyarrow]")
+    buf["date"] = pd.array(buf["date"], dtype=pd.ArrowDtype(pa.timestamp("us")))
+    buf["sha"] = pd.array(buf["sha"], dtype="string[pyarrow]")
     df = pd.DataFrame(buf)
-    timestamp = dt.datetime.fromtimestamp(results["date"] / 1000)
-    df["date"] = pd.array(
-        [timestamp] * len(df), dtype=pd.ArrowDtype(pa.timestamp("us"))
-    )
-    df["sha"] = pd.array([commit_hash] * len(df), dtype="string[pyarrow]")
 
     columns = ["date", "sha", "name", "params", "result"]
-    df = df[columns]
+    result = df[columns]
 
     parquet_path = output_path / "results.parquet"
-    if os.path.exists(parquet_path):
-        existing = pd.read_parquet(parquet_path)[columns]
-        result = pd.concat([existing, df])
-    else:
-        result = df
     result = detect_regression(result, window_size=21)
     result.to_parquet(parquet_path)
 
