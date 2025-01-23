@@ -1,8 +1,8 @@
 name: Process ASV Results
 on:
-  pull_request:
-    branches:
-      - main
+#  pull_request:
+#    branches:
+#      - main
   schedule:
     - cron: "20 3 * * *"
   workflow_dispatch:
