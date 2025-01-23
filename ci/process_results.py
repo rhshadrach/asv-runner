@@ -4,7 +4,6 @@ import argparse
 import datetime as dt
 import itertools as it
 import json
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -46,9 +45,10 @@ def detect_regression(data: pd.DataFrame, window_size: int = 21) -> pd.DataFrame
 
 
 def run(input_path: str | Path, output_path: str | Path):
-    # input_path: asv_bench
     if not isinstance(input_path, Path):
         input_path = Path(input_path)
+    if not isinstance(output_path, Path):
+        output_path = Path(output_path)
     with open(input_path / "results" / "benchmarks.json") as fh:
         data = json.load(fh)
     benchmark_to_param_names = {
