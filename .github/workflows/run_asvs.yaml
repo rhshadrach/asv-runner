@@ -91,7 +91,7 @@ jobs:
       - name: Move results into asv-runner
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
-          mkdir -p asv-runner/data/results
+          mkdir -p asv-runner/data/results/asvrunner/
           cp asv_bench/results/benchmarks.json asv-runner/data/results/
           cp asv_bench/results/asvrunner/machine.json asv-runner/data/results/asvrunner/
           cp asv_bench/results/asvrunner/$(git rev-parse HEAD)-existing*.json asv-runner/data/results/asvrunner/
