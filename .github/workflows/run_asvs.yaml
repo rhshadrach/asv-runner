@@ -13,7 +13,7 @@ env:
   # Results and other data are stored away from the main branch.
   # This keeps the main branch clean and allows us to clear out
   # objects / history after being built up for long periods of time.
-  BRANCH_NAME: pandas_20240109
+  BRANCH_NAME: pandas_20250109
 
 permissions:
   contents: read
@@ -66,11 +66,6 @@ jobs:
           repository: asv-runner
           file_pattern: 'data/latest_sha.txt'
 
-      - name: Move results directory
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
-        run: |
-          mv asv-runner/data/results asv_bench/results
-
       - name: Set up Conda
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         uses: ./.github/actions/setup-conda
@@ -87,15 +82,19 @@ jobs:
           asv run --machine=asvrunner --python=same --set-commit-hash=$(git rev-parse HEAD) --show-stderr
 
       - name: Update asv-runner branch
+        # In case there was a push by another job.
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
           cd asv-runner
-          git pull
+          git fetch && git pull
 
       - name: Move results into asv-runner
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
         run: |
-          cp -r asv_bench/results/ asv-runner/data/results/
+          mkdir -p asv-runner/data/results/asvrunner/
+          cp asv_bench/results/benchmarks.json asv-runner/data/results/
+          cp asv_bench/results/asvrunner/machine.json asv-runner/data/results/asvrunner/
+          cp asv_bench/results/asvrunner/$(git rev-parse HEAD)-existing*.json asv-runner/data/results/asvrunner/
 
       - name: Commit results to branch
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}

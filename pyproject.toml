@@ -70,7 +70,6 @@ select = [
     "Q",   # flake8-quotes
     "RUF", # Ruff-specific rules
     "SIM", # flake8-simplify
-    "T20", # flake8-print
     "UP",  # pyupgrade
     "W",   # pycodestyle - warning
     "YTT", # flake8-2020

@@ -67,8 +67,9 @@ def run(input_path: str | Path):
         .drop_duplicates(subset="sha")
         .sort_values("date")["sha"]
         .unique()
-        .tolist()[-20:]
+        .tolist()[-40:]
     )
+    print("Number of regressions to raise issues for:", len(regression_shas))
     for sha in regression_shas:
         # Avoid GitHub rate limits
         time.sleep(2)
