@@ -94,7 +94,7 @@ jobs:
           mkdir -p asv-runner/data/results/asvrunner/
           cp asv_bench/results/benchmarks.json asv-runner/data/results/
           cp asv_bench/results/asvrunner/machine.json asv-runner/data/results/asvrunner/
-          cp asv_bench/results/asvrunner/$(git rev-parse HEAD)-existing*.json asv-runner/data/results/asvrunner/
+          cp asv_bench/results/asvrunner/$(git rev-parse --short=8 HEAD)-existing*.json asv-runner/data/results/asvrunner/
 
       - name: Commit results to branch
         if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
