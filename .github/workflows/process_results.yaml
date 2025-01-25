@@ -54,9 +54,9 @@ jobs:
       - name: Show environment packages
         run: uv pip freeze
 
-      - name: Move results directory
+      - name: Copy results directory
         run: |
-          mv asv-runner/data/results asv_bench/results
+          cp -r asv-runner/data/results asv_bench/results
 
       - name: Publish ASV Benchmarks
         run: cd asv_bench && asv publish
