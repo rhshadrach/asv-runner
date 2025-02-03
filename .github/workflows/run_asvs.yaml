@@ -13,7 +13,7 @@ env:
   # Results and other data are stored away from the main branch.
   # This keeps the main branch clean and allows us to clear out
   # objects / history after being built up for long periods of time.
-  BRANCH_NAME: pandas_20250109
+  BRANCH_NAME: use_full_sha
 
 permissions:
   contents: read
@@ -50,11 +50,7 @@ jobs:
       - name: Get Commit
         id: get-commit
         run: |
-          pwd
-          ls -l
-          ls -l asv-runner/
-          ls -l asv-runner/ci/
-          sha="$(python asv-runner/ci/find_commit_to_run.py)"
+          sha="$(python asv-runner/ci/find_commit_to_run.py --input-path=asv-runner/data/ --repo-path=.)"
           echo "sha: $sha"
           if [ "$sha" = "NONE" ]; then
             echo "new_commit=no"
