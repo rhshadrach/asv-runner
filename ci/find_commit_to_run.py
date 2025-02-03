@@ -10,8 +10,14 @@ def run(*, input_path: str | Path, repo_path: str | Path):
         input_path = Path(input_path)
     if isinstance(repo_path, str):
         repo_path = Path(repo_path)
-    with open(input_path / "shas.txt") as fh:
-        existing_shas = {line.strip() for line in fh.readlines()}
+
+    shas_path = input_path / "shas.txt"
+    existing_shas: set[str]
+    if not shas_path.exists():
+        existing_shas = set()
+    else:
+        with open(input_path / "shas.txt") as fh:
+            existing_shas = {line.strip() for line in fh.readlines()}
 
     response = subprocess.run(
         f"cd {repo_path} && git log -200 --oneline --no-abbrev-commit",
