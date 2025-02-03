@@ -45,12 +45,13 @@ jobs:
           path: asv-runner/
 
       - name: Set up Conda
-        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         uses: ./.github/actions/setup-conda
 
       - name: Get Commit
         id: get-commit
         run: |
+          pwd
+          ls -l
           sha="$(python asv-runner/ci/find_commit_to_run.py)"
           echo "sha: $sha"
           if [ "$sha" = "NONE" ]; then
