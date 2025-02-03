@@ -1,8 +1,8 @@
 name: Run ASV
 on:
-#  pull_request:
-#    branches:
-#      - main
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: "20 * * * *"
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
       contents: write
       issues: write
     outputs:
-      new_commit: ${{ steps.new-commit.outputs.new_commit }}
+      new_commit: ${{ steps.get-commit.outputs.new_commit }}
     steps:
       # In order to run pandas' actions, we have to checkout into the root directory.
       - name: Checkout pandas
@@ -44,38 +44,41 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
           path: asv-runner/
 
-      - name: Compare Commit SHAs
-        id: new-commit
+      - name: Set up Conda
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
+        uses: ./.github/actions/setup-conda
+
+      - name: Get Commit
+        id: get-commit
         run: |
-          if [ "$(git rev-parse HEAD)" = "$(cat asv-runner/data/latest_sha.txt)" ]; then
+          sha="$(python asv-runner/ci/find_commit_to_run.py)"
+          echo "sha: $sha"
+          if [ "$sha" = "NONE" ]; then
             echo "new_commit=no"
             echo "new_commit=no" >> "$GITHUB_OUTPUT"
           else
             echo "new_commit=yes"
             echo "new_commit=yes" >> "$GITHUB_OUTPUT"
           fi
-          echo "$(git rev-parse HEAD)" > asv-runner/data/latest_sha.txt
+          echo "$sha" >> asv-runner/data/shas.txt
+          git checkout $sha
 
       # Prevent another job from kicking off and running on this commit
-      - name: Update latest_sha.txt
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+      - name: Commit shas.txt
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update latest SHA
+          commit_message: Update shas.txt
           branch: ${{ env.BRANCH_NAME }}
           repository: asv-runner
-          file_pattern: 'data/latest_sha.txt'
-
-      - name: Set up Conda
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
-        uses: ./.github/actions/setup-conda
+          file_pattern: 'data/shas.txt'
 
       - name: Build pandas
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         uses: ./.github/actions/build_pandas
 
       - name: Run ASV Benchmarks
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         run: |
           cd asv_bench
           asv machine --machine=asvrunner --yes
@@ -83,21 +86,21 @@ jobs:
 
       - name: Update asv-runner branch
         # In case there was a push by another job.
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         run: |
           cd asv-runner
           git fetch && git pull
 
       - name: Move results into asv-runner
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         run: |
           mkdir -p asv-runner/data/results/asvrunner/
           cp asv_bench/results/benchmarks.json asv-runner/data/results/
           cp asv_bench/results/asvrunner/machine.json asv-runner/data/results/asvrunner/
-          cp asv_bench/results/asvrunner/$(git rev-parse --short=8 HEAD)-existing*.json asv-runner/data/results/asvrunner/
+          cp asv_bench/results/asvrunner/$(git rev-parse --short=8 HEAD)-existing*.json asv-runner/data/results/asvrunner/$(git rev-parse HEAD).json
 
       - name: Commit results to branch
-        if: ${{ steps.new-commit.outputs.new_commit == 'yes' }}
+        if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Results
