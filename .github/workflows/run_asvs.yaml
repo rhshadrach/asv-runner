@@ -52,6 +52,8 @@ jobs:
         run: |
           pwd
           ls -l
+          ls -l asv-runner/
+          ls -l asv-runner/ci/
           sha="$(python asv-runner/ci/find_commit_to_run.py)"
           echo "sha: $sha"
           if [ "$sha" = "NONE" ]; then
