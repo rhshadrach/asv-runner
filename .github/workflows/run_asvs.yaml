@@ -1,8 +1,8 @@
 name: Run ASV
 on:
-  pull_request:
-    branches:
-      - main
+#  pull_request:
+#    branches:
+#      - main
   schedule:
     - cron: "20 * * * *"
   workflow_dispatch:
@@ -13,7 +13,7 @@ env:
   # Results and other data are stored away from the main branch.
   # This keeps the main branch clean and allows us to clear out
   # objects / history after being built up for long periods of time.
-  BRANCH_NAME: write_conda_file
+  BRANCH_NAME: pandas_20250203
 
 permissions:
   contents: read
@@ -99,7 +99,7 @@ jobs:
           cp asv_bench/results/asvrunner/$(git rev-parse --short=8 HEAD)-existing*.json asv-runner/data/results/asvrunner/$(git rev-parse HEAD).json
 
           mkdir -p asv-runner/data/envs/
-          conda env export > $(git rev-parse HEAD).yml
+          conda env export > asv-runner/data/envs/$(git rev-parse HEAD).yml
 
       - name: Commit results to branch
         if: ${{ steps.get-commit.outputs.new_commit == 'yes' }}
