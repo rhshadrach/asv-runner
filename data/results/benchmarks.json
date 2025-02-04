@@ -13992,7 +13992,7 @@
         "warmup_time": -1
     },
     "io.style.Render.peakmem_apply_format_hide_render": {
-        "code": "class Render:\n    def peakmem_apply_format_hide_render(self, cols, rows):\n        self._style_apply_format_hide()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def peakmem_apply_format_hide_render(self, cols, rows):\n        self._style_apply_format_hide()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "name": "io.style.Render.peakmem_apply_format_hide_render",
         "param_names": [
             "cols",
@@ -14011,10 +14011,10 @@
         ],
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "e60cd641e7276e782ea6f8cb9e79fe72d440e194edc99f56ce7355285abebda8"
+        "version": "24efee29e9f4259b3dc32b50ebebd07120a2cc59672b5f07aaf694b3350ffc33"
     },
     "io.style.Render.peakmem_apply_render": {
-        "code": "class Render:\n    def peakmem_apply_render(self, cols, rows):\n        self._style_apply()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def peakmem_apply_render(self, cols, rows):\n        self._style_apply()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "name": "io.style.Render.peakmem_apply_render",
         "param_names": [
             "cols",
@@ -14033,10 +14033,10 @@
         ],
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "d8e987bc198784acca05098b72e32f3828525879d751666a8c96839cc90fdb91"
+        "version": "f1291d9b0cee2ed29164614c2827a58907e0943d031efe0a1f700dd7bb3ea1ef"
     },
     "io.style.Render.peakmem_classes_render": {
-        "code": "class Render:\n    def peakmem_classes_render(self, cols, rows):\n        self._style_classes()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def peakmem_classes_render(self, cols, rows):\n        self._style_classes()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "name": "io.style.Render.peakmem_classes_render",
         "param_names": [
             "cols",
@@ -14055,10 +14055,10 @@
         ],
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "bfa5f3ec26d4b069d8d7a5dd601bd5c31efd4ac1b8d820c64eea58b84d5bef2c"
+        "version": "1d74d0ee63b8ddbcb67f37a2c6260ebe84c54ec1d2650db12d284630efa672c9"
     },
     "io.style.Render.peakmem_format_render": {
-        "code": "class Render:\n    def peakmem_format_render(self, cols, rows):\n        self._style_format()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def peakmem_format_render(self, cols, rows):\n        self._style_format()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "name": "io.style.Render.peakmem_format_render",
         "param_names": [
             "cols",
@@ -14077,10 +14077,10 @@
         ],
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "7de58be51c40c9b9a4b9ead6fe0febd2fd965be97091c0975d3a81aa65db7a9a"
+        "version": "2d2ae2b598964ca4ec2ce6befed05ff0ed2c8833539c314cbc42c2a006d9abcf"
     },
     "io.style.Render.peakmem_tooltips_render": {
-        "code": "class Render:\n    def peakmem_tooltips_render(self, cols, rows):\n        self._style_tooltips()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def peakmem_tooltips_render(self, cols, rows):\n        self._style_tooltips()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "name": "io.style.Render.peakmem_tooltips_render",
         "param_names": [
             "cols",
@@ -14099,10 +14099,10 @@
         ],
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "eed00f8f4762083fcf457ab05ac4675cb67055f639beef3675b4c59568431ff5"
+        "version": "f3165d89bad8a5256ce768ec97faaca1dc322cc15dfc6cce5c8f629872c4b625"
     },
     "io.style.Render.time_apply_format_hide_render": {
-        "code": "class Render:\n    def time_apply_format_hide_render(self, cols, rows):\n        self._style_apply_format_hide()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def time_apply_format_hide_render(self, cols, rows):\n        self._style_apply_format_hide()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "min_run_count": 2,
         "name": "io.style.Render.time_apply_format_hide_render",
         "number": 0,
@@ -14126,11 +14126,11 @@
         "sample_time": 0.01,
         "type": "time",
         "unit": "seconds",
-        "version": "aa58fd1e34e914254af81f08c5f248b6d9b182868a30e1523dd28e19c0980ea1",
+        "version": "4624b648242dbd72367816b07786b7bb20dec67fcf4d8b269046640a281b891b",
         "warmup_time": -1
     },
     "io.style.Render.time_apply_render": {
-        "code": "class Render:\n    def time_apply_render(self, cols, rows):\n        self._style_apply()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def time_apply_render(self, cols, rows):\n        self._style_apply()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "min_run_count": 2,
         "name": "io.style.Render.time_apply_render",
         "number": 0,
@@ -14154,11 +14154,11 @@
         "sample_time": 0.01,
         "type": "time",
         "unit": "seconds",
-        "version": "24e0e3280fc243c94907c7f372b5b9fa036c35bbefc27581c1049b384b031a73",
+        "version": "b7713a928f5b63249a63e44399f6d18a893bff35ae8541e666af0885aec0a166",
         "warmup_time": -1
     },
     "io.style.Render.time_classes_render": {
-        "code": "class Render:\n    def time_classes_render(self, cols, rows):\n        self._style_classes()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def time_classes_render(self, cols, rows):\n        self._style_classes()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "min_run_count": 2,
         "name": "io.style.Render.time_classes_render",
         "number": 0,
@@ -14182,11 +14182,11 @@
         "sample_time": 0.01,
         "type": "time",
         "unit": "seconds",
-        "version": "2e500c4d225f53d0cf58c3cc3538e87a87e5b8d102fa6da9283d4f7514e0b794",
+        "version": "e385c7e77a27a0e29b3941e7cf3c0727f5f83d8b6279cd9500e63fb1f630d7d5",
         "warmup_time": -1
     },
     "io.style.Render.time_format_render": {
-        "code": "class Render:\n    def time_format_render(self, cols, rows):\n        self._style_format()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def time_format_render(self, cols, rows):\n        self._style_format()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "min_run_count": 2,
         "name": "io.style.Render.time_format_render",
         "number": 0,
@@ -14210,11 +14210,11 @@
         "sample_time": 0.01,
         "type": "time",
         "unit": "seconds",
-        "version": "e5eb35968f97219c6c14dad0735479a4052caa09196f6a8c3a4809034bcad5f3",
+        "version": "2fe7b97954d549aadb2eb134d3d09b8c1334a640488b36869090ed4c430365ed",
         "warmup_time": -1
     },
     "io.style.Render.time_tooltips_render": {
-        "code": "class Render:\n    def time_tooltips_render(self, cols, rows):\n        self._style_tooltips()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i + 1}\" for i in range(cols)],\n            index=[f\"row_{i + 1}\" for i in range(rows)],\n        )",
+        "code": "class Render:\n    def time_tooltips_render(self, cols, rows):\n        self._style_tooltips()\n        self.st._render_html(True, True)\n\n    def setup(self, cols, rows):\n        self.df = DataFrame(\n            np.random.randn(rows, cols),\n            columns=[f\"float_{i+1}\" for i in range(cols)],\n            index=[f\"row_{i+1}\" for i in range(rows)],\n        )",
         "min_run_count": 2,
         "name": "io.style.Render.time_tooltips_render",
         "number": 0,
@@ -14238,7 +14238,7 @@
         "sample_time": 0.01,
         "type": "time",
         "unit": "seconds",
-        "version": "f48a8961f8ea22f1738a314276c3d5889bd91362f000813a8be2062a8745270b",
+        "version": "bf6a27f9959b331a6f71cda4f842f4ceb8df92624979f2a522fe57cc98a5e34d",
         "warmup_time": -1
     },
     "join_merge.Align.time_series_align_int64_index": {
