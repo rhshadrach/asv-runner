@@ -20,7 +20,7 @@ def run(*, input_path: str | Path, repo_path: str | Path):
             existing_shas = {line.strip() for line in fh.readlines()}
 
     response = subprocess.run(
-        f"cd {repo_path} && git log -200 --oneline --no-abbrev-commit",
+        f"cd {repo_path} && git log -40 --oneline --no-abbrev-commit",
         capture_output=True,
         shell=True,
         check=False,

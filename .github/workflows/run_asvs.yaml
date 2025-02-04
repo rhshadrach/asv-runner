@@ -13,7 +13,7 @@ env:
   # Results and other data are stored away from the main branch.
   # This keeps the main branch clean and allows us to clear out
   # objects / history after being built up for long periods of time.
-  BRANCH_NAME: use_full_sha
+  BRANCH_NAME: pandas_20250203
 
 permissions:
   contents: read
