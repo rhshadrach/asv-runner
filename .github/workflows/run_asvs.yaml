@@ -58,9 +58,9 @@ jobs:
           else
             echo "new_commit=yes"
             echo "new_commit=yes" >> "$GITHUB_OUTPUT"
+            echo "$sha" >> asv-runner/data/shas.txt
+            git checkout $sha
           fi
-          echo "$sha" >> asv-runner/data/shas.txt
-          git checkout $sha
 
       # Prevent another job from kicking off and running on this commit
       - name: Commit shas.txt
