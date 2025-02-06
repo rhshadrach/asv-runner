@@ -63,7 +63,9 @@ def run(input_path: str | Path, output_path: str | Path):
         "params": [],
         "result": [],
     }
-    for result_json in result_path.glob("*existing*.json"):
+    for result_json in result_path.glob("*.json"):
+        if result_json.name == "machine.json":
+            continue
         with open(result_json) as fh:
             results = json.load(fh)
         commit_hash = results["commit_hash"]
