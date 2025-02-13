@@ -74,7 +74,7 @@ def run(input_path: str | Path):
         # Avoid GitHub rate limits
         time.sleep(2)
         needle = f"Commit {sha}"
-        cmd = f'gh search issues --repo rhshadrach/asv-runner "{needle}"'
+        cmd = f'gh search issues --repo pandas-dev/asv-runner "{needle}"'
         result = execute(cmd)
         if result != "":
             continue
@@ -97,7 +97,7 @@ def run(input_path: str | Path):
         for _, regression in regressions.iterrows():
             benchmark = regression["name"]
             params = regression["params"]
-            base_url = "https://rhshadrach.github.io/asv-runner/#"
+            base_url = "https://pandas-dev.github.io/asv-runner/#"
             url = f"{base_url}{benchmark}"
             abs_change = time_to_str(regression["abs_change"])
             severity = f"{regression['pct_change']:0.3%} ({abs_change})"
@@ -115,7 +115,7 @@ def run(input_path: str | Path):
 
         cmd = (
             f"gh issue create"
-            rf" --repo rhshadrach/asv-runner"
+            rf" --repo pandas-dev/asv-runner"
             rf' --title "{title}"'
             rf' --body "{body}"'
         )
