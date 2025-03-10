@@ -17806,7 +17806,8 @@
                 "'skew'",
                 "'kurt'",
                 "'sum'",
-                "'sem'"
+                "'sem'",
+                "'nunique'"
             ]
         ],
         "type": "peakmemory",
@@ -17848,7 +17849,8 @@
                 "'skew'",
                 "'kurt'",
                 "'sum'",
-                "'sem'"
+                "'sem'",
+                "'nunique'"
             ]
         ],
         "repeat": 0,
